@@ -66,13 +66,13 @@ Simulation::populate()
   mGraph.reset( new Graph( "..\\data\\nodes.txt", "..\\data\\arcs.txt" ) );
   auto car = std::make_unique<PatrolCar>();
   car->mCurrentNode = 11;
-  car->setTravelSpeedKPH( 100.0f );
+  car->setTravelSpeedKPH( 200.0f );
   mPatrolCars.push_back( std::move( car ) );
   srand( 0 );
   mDirtMap = std::make_unique<DirtMap>(
     mWorldWidth, mWorldHeight,
     mCanvaWidth, mCanvaHeight,
-    0.01f );
+    0.001f );
 
   mDirtImage = std::make_unique<sf::Image>();
   mDirtImage->create(
@@ -154,9 +154,7 @@ Simulation::drawStreets( sf::RenderTarget& aRenderTarget )
       size.y = 1.0;
     }
 
-    //size.x = size.x * worldToCanvasScale.x;
-    //size.y = size.y * worldToCanvasScale.y;
-
+    // Draw left to right, bottom to top
     sf::Vector2f origin(
       std::min(from.x, to.x) * worldToCanvasScale.x,
       std::min(from.y, to.y) * worldToCanvasScale.y);
@@ -173,21 +171,6 @@ Simulation::drawDirt( sf::RenderTarget& aRenderTarget )
 {
   mDirtTexture->update( mDirtMap->getDirtMapPix() );
   aRenderTarget.draw( sprite );
-  //sf::Vector2f pixelSquare( 1.0f, 1.0f );
-  //const float* dirtMap = mDirtMap->getDirtMap();
-  //sf::RectangleShape pixel( pixelSquare );
-  //for ( int y = 0; y < mCanvaHeight; ++y )
-  //{
-  //  for ( int x = 0; x < mCanvaWidth; ++x )
-  //  {
-  //    sf::Vector2f position( x, y );
-  //      
-  //    float ratio = dirtMap[y * mCanvaWidth + x];
-  //    pixel.setPosition( position );
-  //    pixel.setFillColor( sf::Color( ratio, ratio, ratio, 0.5f ) );
-  //    aRenderTarget.draw( pixel );
-  //  }
-  //}
 }
 
 
