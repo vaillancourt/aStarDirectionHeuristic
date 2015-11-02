@@ -7,6 +7,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PatrolCar.cpp" />
     <ClCompile Include="Simulation.cpp" />
+    <ClCompile Include="PatrolCarLight.cpp" />
+    <ClCompile Include="DirtMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Node.h" />
@@ -15,5 +17,7 @@
     <ClInclude Include="Global.h" />
     <ClInclude Include="PatrolCar.h" />
     <ClInclude Include="Simulation.h" />
+    <ClInclude Include="PatrolCarLight.h" />
+    <ClInclude Include="DirtMap.h" />
   </ItemGroup>
 </Project>

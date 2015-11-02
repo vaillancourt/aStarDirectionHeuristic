@@ -8,12 +8,17 @@
 #include "Arc.h"
 #include "Node.h"
 
+#include <SFML/System/Vector2.hpp> // DEVEL-AV remove from core classes. 
+
 
 PatrolCar::PatrolCar()
   : mCurrentArc( -1 )
   , mCurrentNode( -1 )
   , mTravelDist( 0.0f )
   , mTravelSpeedKPH( 1.0f )
+  , mPatrolRadius( 0.05f )
+  , mWorldPositionX( 0.0f )
+  , mWorldPositionY( 0.0f )
 {}
 
 
@@ -57,6 +62,8 @@ PatrolCar::simulateOneStep()
       }
     }
   }
+
+  updateWorldPosition();
 }
 
 void 
@@ -67,4 +74,44 @@ PatrolCar::setTravelSpeedKPH( float aValue )
   Simulation& sim = Simulation::GetInstance();
   
   mTravelSpeedKPF = mTravelSpeedKPH / 60.0f / 60.0f / sim.mFrameRate;
+}
+
+
+void 
+PatrolCar::updateWorldPosition()
+{
+  // This mehtod could probably be integrated into the simulateOneStep
+  mWorldPositionX = 0.0f;
+  mWorldPositionY = 0.0f;
+
+  Simulation& sim = Simulation::GetInstance();
+  Graph&      graph = sim.getGraph();
+  
+
+  if ( mCurrentNode != -1 )
+  {
+    auto nodeIt = graph.getNodes().find( mCurrentNode );
+    if ( nodeIt != graph.getNodes().end() )
+    {
+      mWorldPositionX = nodeIt->second->getX();
+      mWorldPositionY = nodeIt->second->getY();
+    }
+    // DEVEL-AV else?
+  }
+  else
+  {
+    auto arcIt = graph.getArcs().find( mCurrentArc );
+    if ( arcIt != graph.getArcs().end() )
+    {
+      sf::Vector2f from( arcIt->second->getNodeFrom()->getX(), arcIt->second->getNodeFrom()->getY() );
+      sf::Vector2f to  ( arcIt->second->getNodeTo  ()->getX(), arcIt->second->getNodeTo  ()->getY() );
+      sf::Vector2f vect = to - from;
+      float ratio = mTravelDist / arcIt->second->getDistance();
+
+      sf::Vector2f position = from + (vect * ratio);
+      mWorldPositionX = position.x;
+      mWorldPositionY = position.y;
+    }
+    // DEVEL-AV else?
+  }
 }

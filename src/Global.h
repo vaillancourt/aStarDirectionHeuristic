@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#define FRAME_RATE 30
+
 #define COLOUR_BACKGROUND 127, 255, 127
 #define COLOUR_FULL_DIRTY   0,   0,   0
 #define COLOUR_ROAD       200, 200, 200

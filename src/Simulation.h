@@ -3,16 +3,22 @@
  */
 #pragma once
 
-#include "Graph.h"
 #include "PatrolCar.h"
 
 #include <memory>
 #include <vector>
 
+#include <SFML/Graphics/Sprite.hpp>
+
 namespace sf
 {
+  class Image;
   class RenderTarget;
+  class Texture;
 }
+
+class DirtMap;
+class Graph;
 
 class Simulation
 {
@@ -43,8 +49,8 @@ public:
   void populate();
 
   Graph& getGraph() { return *mGraph.get(); }
+  DirtMap& getDirtMap() { return *mDirtMap.get(); }
 
-  float mTileToWorldScale; // 
   float mFrameRate;
   float mFrameTime;
   float mWorldWidth;
@@ -57,8 +63,18 @@ public:
 private:
 
   std::unique_ptr<Graph> mGraph;
+  std::unique_ptr<DirtMap> mDirtMap;
+
+  void drawBackground( sf::RenderTarget& aRenderTarget );
+  void drawStreets( sf::RenderTarget& aRenderTarget );
+  void drawDirt( sf::RenderTarget& aRenderTarget );
+  void drawPatrolCars( sf::RenderTarget& aRenderTarget );
 
   std::vector< std::unique_ptr<PatrolCar> > mPatrolCars;
+
+  std::unique_ptr<sf::Image> mDirtImage;
+  std::unique_ptr<sf::Texture> mDirtTexture;
+  sf::Sprite sprite;
 
   static std::unique_ptr<Simulation> Instance;
   static bool                        IsFromTerminate;;

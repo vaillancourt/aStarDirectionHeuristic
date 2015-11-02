@@ -19,7 +19,7 @@ main(void)
   sf::RenderWindow window(sf::VideoMode(256, 192), "SFML works!");
 
   
-  std::chrono::duration<int, std::ratio<1, 30> > frameDuration;
+  std::chrono::duration<int, std::ratio<1, FRAME_RATE> > frameDuration;
 
   while (window.isOpen())
   {

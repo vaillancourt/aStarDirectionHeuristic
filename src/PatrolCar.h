@@ -16,7 +16,18 @@ public:
 
   void setTravelSpeedKPH( float aValue );
 
+  void putWorldPosition( float& aX, float& aY ) const { aX = mWorldPositionX; aY = mWorldPositionY; }
+
+  float mPatrolRadius;
+
 private:
+
+  void updateWorldPosition();
+
   float mTravelSpeedKPH;
   float mTravelSpeedKPF; /// K per frame
+
+
+  float mWorldPositionX;
+  float mWorldPositionY;
 };
