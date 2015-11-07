@@ -18,6 +18,7 @@ public:
   int getId() const { return mId; }
   float getX()  const { return mX; }
   float getY()  const { return mY; }
+  float getDirtLevel() const;
   
   std::vector< std::shared_ptr<Arc> >& getOutArcs() { return mArcsOut; }
 

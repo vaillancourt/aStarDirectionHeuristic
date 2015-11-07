@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <vector>
 
 class Node;
 class Arc;
@@ -19,7 +20,13 @@ public:
   std::map< int, std::shared_ptr<Node> >& getNodes() { return mNodes; }
   std::map< int, std::shared_ptr<Arc> >& getArcs() { return mArcs; }
 
+  std::vector<int> plot( int aStart, int aEnd );
+
+  float getHeuristicBetween( int aFromNode, int aToNode ) const;
+
 private:
+
+  std::vector<int> reconstructPath( const std::map<int, int>& aCameFrom, int aCurrent );
 
   std::map< int, std::shared_ptr<Node> > mNodes;
   std::map< int, std::shared_ptr<Arc> > mArcs;

@@ -95,3 +95,13 @@ DirtMap::patrol( float aX, float aY, float aRadius )
     }
   }
 }
+
+
+float 
+DirtMap::getDirtLevel( float aX, float aY )
+{
+  int originX = aX / mSizeToGridScale;
+  int originY = aY / mSizeToGridScale;
+
+  return mDirtMap[originY * mCanvasWidth + originX];
+}

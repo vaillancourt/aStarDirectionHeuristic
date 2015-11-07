@@ -20,6 +20,9 @@ public:
   void patrol( float aX, float aY, float aRadius );
   const float*    getDirtMap()    const { return mDirtMap; }
   const uint8_t*  getDirtMapPix() const { return mIntMap; }
+
+  float getDirtLevel( float aX, float aY );
+
 private:
 
   float mWorldWidth;

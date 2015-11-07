@@ -10,6 +10,7 @@
 
 #include <SFML/System/Vector2.hpp> // DEVEL-AV remove from core classes. 
 
+#include <iostream>
 
 PatrolCar::PatrolCar()
   : mCurrentArc( -1 )
@@ -26,25 +27,53 @@ void
 PatrolCar::simulateOneStep()
 {
   Simulation& sim = Simulation::GetInstance();
+  Graph&      graph = sim.getGraph();
+
   if ( mCurrentArc == -1 )
   {
-    auto currNodeIt = sim.getGraph().getNodes().find( mCurrentNode );
+    auto currNodeIt = graph.getNodes().find( mCurrentNode );
 
-    if ( currNodeIt != sim.getGraph().getNodes().end() )
+    if ( currNodeIt != graph.getNodes().end() )
     {
-      auto node = currNodeIt->second;
-      int newArcIdx = -1;
+      auto currentNode = currNodeIt->second;
 
-      if ( node->getOutArcs().size() == 1 )
-        newArcIdx = 0;
-      else if ( node->getOutArcs().size() > 1 )
-        newArcIdx = sim.rand( node->getOutArcs().size() );
-
-      if ( newArcIdx != -1 )
+      if ( currentNode->getOutArcs().size() == 1 )
       {
-        auto newArc = node->getOutArcs()[newArcIdx];
+        mCurrentArc = currentNode->getOutArcs()[0]->getId();
+      }
+      else if ( currentNode->getOutArcs().size() > 1 )
+      {
+        //newArcIdx = sim.rand( node->getOutArcs().size() );
+
+        float maxDirt = std::numeric_limits<float>::lowest();
+        int nodeWithMaxDirt = -1;
+
+        // find the dirtiest node
+        for ( auto it : sim.getGraph().getNodes() )
+        {
+          if ( it.second->getDirtLevel() > maxDirt )
+          {
+            maxDirt = it.second->getDirtLevel();
+            nodeWithMaxDirt = it.first;
+          }
+        }
+
+        std::vector<int> path = graph.plot( mCurrentNode, nodeWithMaxDirt );
+
+        int destNodeIndex = path.size() > 1 ? path[path.size() - 2] : -1;
+
+        for ( auto arcIt : currentNode->getOutArcs() )
+        {
+          if ( destNodeIndex == arcIt->getNodeTo()->getId() )
+          {
+            mCurrentArc = arcIt->getId();
+          }
+        }
+      }
+
+      if ( mCurrentArc != -1 )
+      {
         mCurrentNode = -1;
-        mCurrentArc = newArc->getId();
       }
     }
   }
@@ -115,3 +144,4 @@ PatrolCar::updateWorldPosition()
     // DEVEL-AV else?
   }
 }
+

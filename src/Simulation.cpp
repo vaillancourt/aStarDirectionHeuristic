@@ -64,15 +64,24 @@ void
 Simulation::populate()
 {
   mGraph.reset( new Graph( "..\\data\\nodes.txt", "..\\data\\arcs.txt" ) );
-  auto car = std::make_unique<PatrolCar>();
-  car->mCurrentNode = 11;
-  car->setTravelSpeedKPH( 200.0f );
-  mPatrolCars.push_back( std::move( car ) );
+  {
+    auto car = std::make_unique<PatrolCar>();
+    car->mCurrentNode = 0;
+    car->setTravelSpeedKPH( 200.0f );
+    mPatrolCars.push_back( std::move( car ) );
+  }
+  {
+    auto car = std::make_unique<PatrolCar>();
+    car->mCurrentNode = 11;
+    car->setTravelSpeedKPH( 150.0f );
+    mPatrolCars.push_back( std::move( car ) );
+  }
   srand( 0 );
+
   mDirtMap = std::make_unique<DirtMap>(
     mWorldWidth, mWorldHeight,
     mCanvaWidth, mCanvaHeight,
-    0.001f );
+    0.01f );
 
   mDirtImage = std::make_unique<sf::Image>();
   mDirtImage->create(
