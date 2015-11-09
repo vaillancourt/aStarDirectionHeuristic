@@ -24,6 +24,11 @@ private:
 
   void updateWorldPosition();
 
+  void selectNewArc();
+  void travelOnCurrentArc();
+  int  evaluateAndSelectDestinationNode();
+
+
   float mTravelSpeedKPH;
   float mTravelSpeedKPF; /// K per frame
 
