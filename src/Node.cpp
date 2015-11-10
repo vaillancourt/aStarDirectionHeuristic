@@ -27,10 +27,8 @@ Node::addOutArc( std::shared_ptr<Arc> aArc )
   mArcsOut.push_back( aArc );
 }
 
-float
-Node::getDirtLevel() const
+uint8_t
+Node::getDirtLevelScaled() const
 {
-  float dirtLevel = Simulation::GetInstance().getDirtMap().getDirtLevel( mX, mY );
-
-  return dirtLevel;
+  return Simulation::GetInstance().getDirtMap().getDirtLevelScaled( mX, mY );
 }

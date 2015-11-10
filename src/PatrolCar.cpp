@@ -155,19 +155,30 @@ PatrolCar::evaluateAndSelectDestinationNode()
 {
   //newArcIdx = sim.rand( node->getOutArcs().size() );
 
-  float maxDirt = std::numeric_limits<float>::lowest();
-  int nodeWithMaxDirt = -1;
+  float maxScore = std::numeric_limits<float>::lowest();
+  int nodeWithMaxScore = -1;
+  float maxRadiusSquare = Simulation::GetInstance().getMaxRadiusSquare();
 
   // find the dirtiest node
   for ( auto it : Simulation::GetInstance().getGraph().getNodes() )
   {
-    if ( it.second->getDirtLevel() > maxDirt )
+    float distToNodeSquare =
+      ( mWorldPositionX - it.second->getX() ) * ( mWorldPositionX - it.second->getX() ) +
+      ( mWorldPositionY - it.second->getY() ) * ( mWorldPositionY - it.second->getY() );
+
+    float distRatio = distToNodeSquare / maxRadiusSquare;
+    float dirtRatio = static_cast<float>( it.second->getDirtLevelScaled() ) / 255.0f;
+    // Closer the better
+    // Dirtier the better
+    float thisNodesScore = dirtRatio * ( 1.0f - distRatio );
+
+    if ( thisNodesScore > maxScore )
     {
-      maxDirt = it.second->getDirtLevel();
-      nodeWithMaxDirt = it.first;
+      maxScore = thisNodesScore;
+      nodeWithMaxScore = it.first;
     }
   }
 
-  return nodeWithMaxDirt;
+  return nodeWithMaxScore;
 }
 

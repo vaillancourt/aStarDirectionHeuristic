@@ -50,6 +50,8 @@ Simulation::Simulation()
   , mCanvaHeight( 192 )
   , mCanvaWidth( 256 )
 {
+  mMaxRadiusSquare = mWorldWidth * mWorldWidth + mWorldHeight * mWorldHeight;
+  mMaxRadius = std::sqrt( mMaxRadiusSquare );
 }
 
 

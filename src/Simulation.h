@@ -58,8 +58,12 @@ public:
   int mCanvaHeight;
   int mCanvaWidth;
 
+  float getMaxRadius() const { return mMaxRadius; }
+  float getMaxRadiusSquare() const { return mMaxRadiusSquare; }
+
   ~Simulation();
   Simulation();
+
 private:
 
   std::unique_ptr<Graph> mGraph;
@@ -71,6 +75,9 @@ private:
   void drawPatrolCars( sf::RenderTarget& aRenderTarget );
 
   std::vector< std::unique_ptr<PatrolCar> > mPatrolCars;
+
+  float mMaxRadius;
+  float mMaxRadiusSquare;
 
   std::unique_ptr<sf::Image> mDirtImage;
   std::unique_ptr<sf::Texture> mDirtTexture;

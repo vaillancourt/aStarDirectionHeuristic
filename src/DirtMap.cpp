@@ -105,3 +105,16 @@ DirtMap::getDirtLevel( float aX, float aY )
 
   return mDirtMap[originY * mCanvasWidth + originX];
 }
+
+uint8_t 
+DirtMap::getDirtLevelScaled( float aX, float aY )
+{
+  float dirtLevel = getDirtLevel( aX, aY );
+
+  dirtLevel *= 255.0f;
+  dirtLevel = std::min( dirtLevel, 255.0f );
+  dirtLevel = std::max( dirtLevel,   0.0f );
+
+  return static_cast<uint8_t>( dirtLevel );
+}
+

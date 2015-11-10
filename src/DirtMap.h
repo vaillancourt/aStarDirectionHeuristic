@@ -21,7 +21,7 @@ public:
   const float*    getDirtMap()    const { return mDirtMap; }
   const uint8_t*  getDirtMapPix() const { return mIntMap; }
 
-  float getDirtLevel( float aX, float aY );
+  uint8_t getDirtLevelScaled( float aX, float aY );
 
 private:
 
@@ -37,4 +37,5 @@ private:
   int mCanvasHeight;
   int mGridTileCount;
 
+  float getDirtLevel( float aX, float aY );
 };
