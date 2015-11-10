@@ -67,15 +67,27 @@ Simulation::populate()
 {
   mGraph.reset( new Graph( "..\\data\\nodes.txt", "..\\data\\arcs.txt" ) );
   {
-    auto car = std::make_unique<PatrolCar>();
+    auto car = std::make_unique<PatrolCar>(0);
     car->mCurrentNode = 0;
     car->setTravelSpeedKPH( 200.0f );
     mPatrolCars.push_back( std::move( car ) );
   }
   {
-    auto car = std::make_unique<PatrolCar>();
+    auto car = std::make_unique<PatrolCar>( 1 );
     car->mCurrentNode = 11;
     car->setTravelSpeedKPH( 150.0f );
+    mPatrolCars.push_back( std::move( car ) );
+  }
+  {
+    auto car = std::make_unique<PatrolCar>( 3 );
+    car->mCurrentNode = 5;
+    car->setTravelSpeedKPH( 100.0f );
+    mPatrolCars.push_back( std::move( car ) );
+  }
+  {
+    auto car = std::make_unique<PatrolCar>( 4 );
+    car->mCurrentNode = 7;
+    car->setTravelSpeedKPH( 75.0f );
     mPatrolCars.push_back( std::move( car ) );
   }
   srand( 0 );

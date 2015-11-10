@@ -150,8 +150,13 @@ Graph::getHeuristicBetween( int aFromNode, int aToNode ) const
 {
   auto nodeStartIt = mNodes.find( aFromNode );
   auto nodeEndIt   = mNodes.find( aToNode );
+
   if ( nodeStartIt == mNodes.end() || nodeEndIt == mNodes.end() )
-    return -1.0f;
+    return std::numeric_limits<float>::infinity();
+
+  if ( nodeEndIt->second->getCarBoundToVisit() != -1 )
+    return std::numeric_limits<float>::infinity();
+
   return 
     (   glm::vec2( nodeStartIt->second->getX(), nodeStartIt->second->getY() )
       - glm::vec2( nodeEndIt->second->getX()  , nodeEndIt->second->getY() ) ).length();

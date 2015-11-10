@@ -11,6 +11,7 @@ Node::Node( int aId, float aX, float aY, float aDirtLevel )
   , mX( aX )
   , mY( aY )
   , mDirtLevel( aDirtLevel )
+  , mCarBoundToVisit( -1 )
 {}
 
 void 

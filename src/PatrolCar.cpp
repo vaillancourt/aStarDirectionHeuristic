@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-PatrolCar::PatrolCar()
+PatrolCar::PatrolCar( int aId )
   : mCurrentArc( -1 )
   , mCurrentNode( -1 )
   , mTravelDist( 0.0f )
@@ -20,6 +20,7 @@ PatrolCar::PatrolCar()
   , mPatrolRadius( 0.05f )
   , mWorldPositionX( 0.0f )
   , mWorldPositionY( 0.0f )
+  , mId( aId )
 {}
 
 
@@ -57,6 +58,7 @@ PatrolCar::selectNewArc()
     if ( currentNode->getOutArcs().size() == 1 )
     {
       mCurrentArc = currentNode->getOutArcs()[0]->getId();
+      currentNode->getOutArcs()[0]->getNodeTo()->setCarBoundtoVisit( mId );
     }
     else if ( currentNode->getOutArcs().size() > 1 )
     {
@@ -71,6 +73,7 @@ PatrolCar::selectNewArc()
         if ( destNodeIndex == arcIt->getNodeTo()->getId() )
         {
           mCurrentArc = arcIt->getId();
+          arcIt->getNodeTo()->setCarBoundtoVisit( mId );
         }
       }
     }
@@ -145,6 +148,7 @@ PatrolCar::travelOnCurrentArc()
     {
       mTravelDist = 0.0;
       mCurrentNode = arcIt->second->getNodeTo()->getId();
+      arcIt->second->getNodeTo()->setCarBoundtoVisit( -1 );
       mCurrentArc = -1;
     }
   }
@@ -153,8 +157,6 @@ PatrolCar::travelOnCurrentArc()
 int 
 PatrolCar::evaluateAndSelectDestinationNode()
 {
-  //newArcIdx = sim.rand( node->getOutArcs().size() );
-
   float maxScore = std::numeric_limits<float>::lowest();
   int nodeWithMaxScore = -1;
   float maxRadiusSquare = Simulation::GetInstance().getMaxRadiusSquare();
@@ -162,6 +164,9 @@ PatrolCar::evaluateAndSelectDestinationNode()
   // find the dirtiest node
   for ( auto it : Simulation::GetInstance().getGraph().getNodes() )
   {
+    if ( it.second->getId() == mCurrentNode || it.second->getCarBoundToVisit() != -1 )
+      continue;
+
     float distToNodeSquare =
       ( mWorldPositionX - it.second->getX() ) * ( mWorldPositionX - it.second->getX() ) +
       ( mWorldPositionY - it.second->getY() ) * ( mWorldPositionY - it.second->getY() );

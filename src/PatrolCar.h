@@ -6,7 +6,7 @@
 class PatrolCar
 {
 public:
-  PatrolCar();
+  PatrolCar( int aId );
 
   void simulateOneStep();
 
@@ -31,6 +31,8 @@ private:
 
   float mTravelSpeedKPH;
   float mTravelSpeedKPF; /// K per frame
+
+  int mId;
 
 
   float mWorldPositionX;

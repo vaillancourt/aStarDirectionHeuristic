@@ -22,11 +22,16 @@ public:
   
   std::vector< std::shared_ptr<Arc> >& getOutArcs() { return mArcsOut; }
 
+  int getCarBoundToVisit() const { return mCarBoundToVisit; }
+  void setCarBoundtoVisit( int aValue ) { mCarBoundToVisit = aValue; }
+
 private:
   float mDirtLevel;
   int mId;
   float mX;
   float mY;
+
+  int mCarBoundToVisit;
 
   std::vector< std::shared_ptr<Arc> > mArcsIn;
   std::vector< std::shared_ptr<Arc> > mArcsOut;
