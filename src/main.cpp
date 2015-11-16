@@ -8,6 +8,7 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <iostream>
 
 
 int 
@@ -18,13 +19,16 @@ main(void)
 
   sf::RenderWindow window(sf::VideoMode(256, 192), "SFML works!");
 
-  
-  std::chrono::duration<int, std::ratio<1, FRAME_RATE> > frameDuration;
+  std::chrono::milliseconds frameDurationMs( 1000 / FRAME_RATE );
+
+  int frameCount = 0;
+
+  auto secondEnd = std::chrono::high_resolution_clock::now() + std::chrono::seconds( 1 );
 
   while (window.isOpen())
   {
     auto startTimePoint = std::chrono::high_resolution_clock::now();
-    auto endTimePoint   = startTimePoint + frameDuration;
+    auto endTimePoint   = startTimePoint + frameDurationMs;
 
     sf::Event event;
     while (window.pollEvent(event))
@@ -37,8 +41,19 @@ main(void)
     window.clear();
     Simulation::GetInstance().draw( window );
     window.display();
-
-    std::this_thread::sleep_until( endTimePoint );
+    
+    auto now = std::chrono::high_resolution_clock::now();
+    if ( now < endTimePoint )
+    {
+      std::this_thread::sleep_until( endTimePoint );
+    }
+    ++frameCount;
+    if ( std::chrono::high_resolution_clock::now() > secondEnd )
+    {
+      std::cout << frameCount << std::endl;
+      frameCount = 0;
+      secondEnd = std::chrono::high_resolution_clock::now() + std::chrono::seconds( 1 );
+    }
   }
 
   Simulation::TerminateInstance();

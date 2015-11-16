@@ -31,7 +31,7 @@ private:
   float* mDirtMap;
   uint8_t* mIntMap;
   float mDirtRatePerFrame;
-  float mSizeToGridScale;
+  const float mSizeToGridScale;
 
   int mCanvasWidth;
   int mCanvasHeight;

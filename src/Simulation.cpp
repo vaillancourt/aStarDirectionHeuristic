@@ -3,11 +3,13 @@
  */
 #include "Simulation.h"
 
+#include "Arc.h"
 #include "DirtMap.h"
 #include "Global.h"
 #include "Graph.h"
-#include "Arc.h"
 #include "Node.h"
+#include "PatrolCar.h"
+#include "PatrolCarLight.h"
 
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -47,8 +49,9 @@ Simulation::Simulation()
   , mFrameTime( 1.0f / FRAME_RATE )
   , mWorldWidth( 1.6f )
   , mWorldHeight( 1.6f / 4.0f * 3.0f )
-  , mCanvaHeight( 192 )
   , mCanvaWidth( 256 )
+  , mCanvaHeight( 256 / 4 * 3 )
+  , mWorldToGraphicRatio( 256.0f / 1.6f)
 {
   mMaxRadiusSquare = mWorldWidth * mWorldWidth + mWorldHeight * mWorldHeight;
   mMaxRadius = std::sqrt( mMaxRadiusSquare );
@@ -66,30 +69,90 @@ void
 Simulation::populate()
 {
   mGraph.reset( new Graph( "..\\data\\nodes.txt", "..\\data\\arcs.txt" ) );
+  const int frameInState = 120;
   {
     auto car = std::make_unique<PatrolCar>(0);
     car->mCurrentNode = 0;
     car->setTravelSpeedKPH( 200.0f );
+
+    float rad = car->getPatrolRadius();
+
+    auto carLight = std::make_unique<PatrolCarLight>(
+      rad,
+      rad * mWorldToGraphicRatio,
+      sf::Color::Red,
+      sf::Color::Blue,
+      frameInState );
+
     mPatrolCars.push_back( std::move( car ) );
+
+
+    auto carLightImage = std::make_unique<sf::Image>();
+    carLightImage->create(
+      static_cast<unsigned int>( carLight->getLightSize() ),
+      static_cast<unsigned int>( carLight->getLightSize() ),
+      carLight->getLightPix() );
+    
+    auto carLightTexture = std::make_unique<sf::Texture>();
+    carLightTexture->loadFromImage( *carLightImage );
+
+
+    mPatrolCarLightsSprites.emplace_back();
+    mPatrolCarLightsSprites[mPatrolCarLightsSprites.size() - 1].setTexture( *carLightTexture );
+
+
+    mPatrolCarLightsTextures.push_back( std::move( carLightTexture ) );
+    mPatrolCarLightsImages.push_back( std::move( carLightImage ) );
+    mPatrolCarLights.push_back( std::move( carLight ) );
+
   }
-  {
-    auto car = std::make_unique<PatrolCar>( 1 );
-    car->mCurrentNode = 11;
-    car->setTravelSpeedKPH( 150.0f );
-    mPatrolCars.push_back( std::move( car ) );
-  }
-  {
-    auto car = std::make_unique<PatrolCar>( 3 );
-    car->mCurrentNode = 5;
-    car->setTravelSpeedKPH( 100.0f );
-    mPatrolCars.push_back( std::move( car ) );
-  }
-  {
-    auto car = std::make_unique<PatrolCar>( 4 );
-    car->mCurrentNode = 7;
-    car->setTravelSpeedKPH( 75.0f );
-    mPatrolCars.push_back( std::move( car ) );
-  }
+  //{
+  //  auto car = std::make_unique<PatrolCar>( 1 );
+  //  car->mCurrentNode = 11;
+  //  car->setTravelSpeedKPH( 150.0f );
+
+  //  auto carLight = std::make_unique<PatrolCarLight>(
+  //    car->getPatrolRadius(),
+  //    car->getPatrolRadius() * mWorldToGraphicRatio,
+  //    sf::Color::Red,
+  //    sf::Color::Blue,
+  //    frameInState );
+
+  //  mPatrolCars.push_back( std::move( car ) );
+  //  mPatrolCarLights.push_back( std::move( carLight ) );
+  //}
+  //{
+  //  auto car = std::make_unique<PatrolCar>( 3 );
+  //  car->mCurrentNode = 5;
+  //  car->setTravelSpeedKPH( 100.0f );
+  //  mPatrolCars.push_back( std::move( car ) );
+
+  //  auto carLight = std::make_unique<PatrolCarLight>(
+  //    car->getPatrolRadius(),
+  //    car->getPatrolRadius() * mWorldToGraphicRatio,
+  //    sf::Color::Red,
+  //    sf::Color::Blue,
+  //    frameInState );
+
+  //  mPatrolCars.push_back( std::move( car ) );
+  //  mPatrolCarLights.push_back( std::move( carLight ) );
+  //}
+  //{
+  //  auto car = std::make_unique<PatrolCar>( 4 );
+  //  car->mCurrentNode = 7;
+  //  car->setTravelSpeedKPH( 75.0f );
+  //  mPatrolCars.push_back( std::move( car ) );
+
+  //  auto carLight = std::make_unique<PatrolCarLight>(
+  //    car->getPatrolRadius(),
+  //    car->getPatrolRadius() * mWorldToGraphicRatio,
+  //    sf::Color::Red,
+  //    sf::Color::Blue,
+  //    frameInState );
+
+  //  mPatrolCars.push_back( std::move( car ) );
+  //  mPatrolCarLights.push_back( std::move( carLight ) );
+  //}
   srand( 0 );
 
   mDirtMap = std::make_unique<DirtMap>(
@@ -105,7 +168,7 @@ Simulation::populate()
   mDirtTexture = std::make_unique<sf::Texture>();
   mDirtTexture->loadFromImage( *mDirtImage.get() );
 
-  sprite.setTexture( *mDirtTexture.get() );
+  mDirtMapSprite.setTexture( *mDirtTexture.get() );
 }
 
 
@@ -120,6 +183,7 @@ Simulation::simulateOneStep()
     float y = 0.0f;
     mPatrolCars[i]->putWorldPosition( x, y );
     mDirtMap->patrol( x, y, mPatrolCars[i]->mPatrolRadius );
+    mPatrolCarLights[i]->simulateOneStep();
   }
 }
 
@@ -134,7 +198,7 @@ Simulation::draw( sf::RenderTarget& aRenderTarget )
   drawBackground( aRenderTarget );
   drawStreets( aRenderTarget );
   drawDirt( aRenderTarget );
-  // Lights
+  drawLigts( aRenderTarget );
   drawPatrolCars( aRenderTarget );
 }
 
@@ -193,7 +257,7 @@ void
 Simulation::drawDirt( sf::RenderTarget& aRenderTarget )
 {
   mDirtTexture->update( mDirtMap->getDirtMapPix() );
-  aRenderTarget.draw( sprite );
+  aRenderTarget.draw( mDirtMapSprite );
 }
 
 
@@ -218,6 +282,28 @@ Simulation::drawPatrolCars( sf::RenderTarget& aRenderTarget )
     car.setPosition( position );
     car.setFillColor( sf::Color( COLOUR_POLICE_R ) );
     aRenderTarget.draw( car );
+  }
+}
+
+
+void 
+Simulation::drawLigts( sf::RenderTarget& aRenderTarget )
+{
+  for ( int i = 0; i < mPatrolCarLights.size(); ++i )
+  {
+    PatrolCarLight& patrolCarLight = *mPatrolCarLights[i].get();
+    PatrolCar patrolCar = *mPatrolCars[i].get();
+
+    sf::Vector2f position;
+    patrolCar.putWorldPosition( position.x, position.y );
+
+    position *= mWorldToGraphicRatio;
+
+    mPatrolCarLightsSprites[i].setPosition( position );
+    mPatrolCarLightsSprites[i].setOrigin( sf::Vector2f( patrolCarLight.getLightSize() / 2, patrolCarLight.getLightSize() / 2 ) );
+    mPatrolCarLightsTextures[i]->update( patrolCarLight.getLightPix() );
+
+    aRenderTarget.draw( mPatrolCarLightsSprites[i] );
   }
 }
 

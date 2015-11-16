@@ -89,6 +89,7 @@
   <ItemGroup>
     <ClCompile Include="Arc.cpp" />
     <ClCompile Include="DirtMap.cpp" />
+    <ClCompile Include="Global.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Node.cpp" />

@@ -18,6 +18,7 @@ public:
 
   void putWorldPosition( float& aX, float& aY ) const { aX = mWorldPositionX; aY = mWorldPositionY; }
 
+  float getPatrolRadius() const { return mPatrolRadius; }
   float mPatrolRadius;
 
 private:

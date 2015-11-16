@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "PatrolCar.h"
-
 #include <memory>
 #include <vector>
 
@@ -19,6 +17,8 @@ namespace sf
 
 class DirtMap;
 class Graph;
+class PatrolCar;
+class PatrolCarLight;
 
 class Simulation
 {
@@ -60,6 +60,7 @@ public:
 
   float getMaxRadius() const { return mMaxRadius; }
   float getMaxRadiusSquare() const { return mMaxRadiusSquare; }
+  float getWorldToGraphicRatio() const { return mWorldToGraphicRatio; }
 
   ~Simulation();
   Simulation();
@@ -73,15 +74,23 @@ private:
   void drawStreets( sf::RenderTarget& aRenderTarget );
   void drawDirt( sf::RenderTarget& aRenderTarget );
   void drawPatrolCars( sf::RenderTarget& aRenderTarget );
+  void drawLigts( sf::RenderTarget& aRenderTarget );
 
   std::vector< std::unique_ptr<PatrolCar> > mPatrolCars;
+  std::vector< std::unique_ptr<PatrolCarLight> > mPatrolCarLights;
+
 
   float mMaxRadius;
   float mMaxRadiusSquare;
+  const float mWorldToGraphicRatio;
 
   std::unique_ptr<sf::Image> mDirtImage;
   std::unique_ptr<sf::Texture> mDirtTexture;
-  sf::Sprite sprite;
+  sf::Sprite mDirtMapSprite;
+
+  std::vector<std::unique_ptr< sf::Image > >   mPatrolCarLightsImages;
+  std::vector<std::unique_ptr< sf::Texture > > mPatrolCarLightsTextures;
+  std::vector<sf::Sprite>                      mPatrolCarLightsSprites;
 
   static std::unique_ptr<Simulation> Instance;
   static bool                        IsFromTerminate;;

@@ -31,7 +31,7 @@ DirtMap::DirtMap(
   mDirtRatePerFrame = aDirtRate / Simulation::GetInstance().mFrameRate;
 
   mIntMap = new uint8_t[mGridTileCount * 4];
-  memset( mIntMap, 0, sizeof( uint32_t ) * mGridTileCount );
+  memset( mIntMap, 0, sizeof( uint8_t ) * mGridTileCount * 4 );
 }
 
 DirtMap::~DirtMap()
@@ -91,7 +91,9 @@ DirtMap::patrol( float aX, float aY, float aRadius )
     for ( int x = 0; x < mCanvasWidth; ++x )
     {
       if ( (originX - x) * (originX - x) + (originY - y) * (originY - y) < tileRadiusSq )
+      {
         mDirtMap[y * mCanvasWidth + x] = 0.0f;
+      }
     }
   }
 }
