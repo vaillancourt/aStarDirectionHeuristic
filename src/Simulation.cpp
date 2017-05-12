@@ -69,13 +69,14 @@ void
 Simulation::populate()
 {
   mGraph.reset( new Graph( "..\\data\\nodes.txt", "..\\data\\arcs.txt" ) );
-  const int frameInState = 120;
+  const int frameInState = FRAME_RATE;
   {
     auto car = std::make_unique<PatrolCar>(0);
     car->mCurrentNode = 0;
-    car->setTravelSpeedKPH( 200.0f );
+    car->setTravelSpeedKPH( 1800.0f );
 
     float rad = car->getPatrolRadius();
+    mPatrolCars.push_back( std::move( car ) );
 
     auto carLight = std::make_unique<PatrolCarLight>(
       rad,
@@ -83,9 +84,6 @@ Simulation::populate()
       sf::Color::Red,
       sf::Color::Blue,
       frameInState );
-
-    mPatrolCars.push_back( std::move( car ) );
-
 
     auto carLightImage = std::make_unique<sf::Image>();
     carLightImage->create(
@@ -104,6 +102,34 @@ Simulation::populate()
     mPatrolCarLightsTextures.push_back( std::move( carLightTexture ) );
     mPatrolCarLightsImages.push_back( std::move( carLightImage ) );
     mPatrolCarLights.push_back( std::move( carLight ) );
+
+    {
+      auto carLight = std::make_unique<PatrolCarLight>(
+        rad,
+        rad * mWorldToGraphicRatio,
+        sf::Color::Yellow,
+        sf::Color::Green,
+        frameInState );
+
+      auto carLightImage = std::make_unique<sf::Image>();
+      carLightImage->create(
+        static_cast<unsigned int>( carLight->getLightSize() ),
+        static_cast<unsigned int>( carLight->getLightSize() ),
+        carLight->getLightPix() );
+    
+      auto carLightTexture = std::make_unique<sf::Texture>();
+      carLightTexture->loadFromImage( *carLightImage );
+
+
+      mPatrolCarLightsSprites.emplace_back();
+      mPatrolCarLightsSprites[mPatrolCarLightsSprites.size() - 1].setTexture( *carLightTexture );
+
+
+      mPatrolCarLightsTextures.push_back( std::move( carLightTexture ) );
+      mPatrolCarLightsImages.push_back( std::move( carLightImage ) );
+      mPatrolCarLights.push_back( std::move( carLight ) );
+    }
+
 
   }
   //{
@@ -182,7 +208,7 @@ Simulation::simulateOneStep()
     float x = 0.0f;
     float y = 0.0f;
     mPatrolCars[i]->putWorldPosition( x, y );
-    mDirtMap->patrol( x, y, mPatrolCars[i]->mPatrolRadius );
+    mDirtMap->patrol( x, y, mPatrolCars[i]->getPatrolRadius() );
     mPatrolCarLights[i]->simulateOneStep();
   }
 }
@@ -282,6 +308,10 @@ Simulation::drawPatrolCars( sf::RenderTarget& aRenderTarget )
     car.setPosition( position );
     car.setFillColor( sf::Color( COLOUR_POLICE_R ) );
     aRenderTarget.draw( car );
+
+    {
+
+    }
   }
 }
 
@@ -291,19 +321,36 @@ Simulation::drawLigts( sf::RenderTarget& aRenderTarget )
 {
   for ( int i = 0; i < mPatrolCarLights.size(); ++i )
   {
-    PatrolCarLight& patrolCarLight = *mPatrolCarLights[i].get();
     PatrolCar patrolCar = *mPatrolCars[i].get();
 
-    sf::Vector2f position;
-    patrolCar.putWorldPosition( position.x, position.y );
+    {
+      PatrolCarLight& patrolCarLight = *mPatrolCarLights[i].get();
+      sf::Vector2f position;
+      patrolCar.putWorldPosition( position.x, position.y );
 
-    position *= mWorldToGraphicRatio;
+      position *= mWorldToGraphicRatio;
 
-    mPatrolCarLightsSprites[i].setPosition( position );
-    mPatrolCarLightsSprites[i].setOrigin( sf::Vector2f( patrolCarLight.getLightSize() / 2, patrolCarLight.getLightSize() / 2 ) );
-    mPatrolCarLightsTextures[i]->update( patrolCarLight.getLightPix() );
+      mPatrolCarLightsSprites[i].setPosition( position );
+      mPatrolCarLightsSprites[i].setOrigin( sf::Vector2f( patrolCarLight.getLightSize() / 2, patrolCarLight.getLightSize() / 2 ) );
+      mPatrolCarLightsTextures[i]->update( patrolCarLight.getLightPix() );
 
-    aRenderTarget.draw( mPatrolCarLightsSprites[i] );
+      aRenderTarget.draw( mPatrolCarLightsSprites[i] );
+    }
+    {
+      sf::Vector2f position;
+      patrolCar.putDestinationWorldPosition( position.x, position.y );
+
+      position *= mWorldToGraphicRatio;
+      ++i;
+      PatrolCarLight& patrolCarLight = *mPatrolCarLights[i].get();
+      mPatrolCarLightsSprites[i].setPosition( position );
+      mPatrolCarLightsSprites[i].setOrigin( sf::Vector2f( patrolCarLight.getLightSize() / 2, patrolCarLight.getLightSize() / 2 ) );
+      mPatrolCarLightsTextures[i]->update( patrolCarLight.getLightPix() );
+
+      aRenderTarget.draw( mPatrolCarLightsSprites[i] );
+    }
+
+
   }
 }
 

@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include <vector>
+
 class PatrolCar
 {
 public:
@@ -13,13 +15,14 @@ public:
   int mCurrentArc;
   int mCurrentNode;
   float mTravelDist;
+  int mNextNode;
 
   void setTravelSpeedKPH( float aValue );
 
   void putWorldPosition( float& aX, float& aY ) const { aX = mWorldPositionX; aY = mWorldPositionY; }
+  void putDestinationWorldPosition( float& aX, float& aY );
 
   float getPatrolRadius() const { return mPatrolRadius; }
-  float mPatrolRadius;
 
 private:
 
@@ -30,12 +33,18 @@ private:
   int  evaluateAndSelectDestinationNode();
 
 
+  float mPatrolRadius;
   float mTravelSpeedKPH;
   float mTravelSpeedKPF; /// K per frame
 
   int mId;
 
+  std::vector<int> mPath;
+
 
   float mWorldPositionX;
   float mWorldPositionY;
+
+  float mDestinationWorldPositionX;
+  float mDestinationWorldPositionY;
 };

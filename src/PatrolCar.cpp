@@ -36,7 +36,7 @@ PatrolCar::simulateOneStep()
   }
   else // mCurrentArc != -1
   {
-    PatrolCar::travelOnCurrentArc();
+    travelOnCurrentArc();
   }
 
   updateWorldPosition();
@@ -62,11 +62,15 @@ PatrolCar::selectNewArc()
     }
     else if ( currentNode->getOutArcs().size() > 1 )
     {
-      int nodeWithMaxDirt = evaluateAndSelectDestinationNode();
+      if ( mPath.size() <= 1 )
+      {
+        mNextNode = evaluateAndSelectDestinationNode();
+        mPath = graph.plot( mCurrentNode, mNextNode );
+      }
 
-      std::vector<int> path = graph.plot( mCurrentNode, nodeWithMaxDirt );
+      int destNodeIndex = mPath.size() > 1 ? mPath[mPath.size() - 2] : -1;
 
-      int destNodeIndex = path.size() > 1 ? path[path.size() - 2] : -1;
+      mPath.pop_back();
 
       for ( auto arcIt : currentNode->getOutArcs() )
       {
@@ -95,6 +99,12 @@ PatrolCar::setTravelSpeedKPH( float aValue )
   mTravelSpeedKPF = mTravelSpeedKPH / 60.0f / 60.0f / sim.mFrameRate;
 }
 
+void
+PatrolCar::putDestinationWorldPosition( float& aX, float& aY )
+{
+  aX = mDestinationWorldPositionX;
+  aY = mDestinationWorldPositionY;
+}
 
 void 
 PatrolCar::updateWorldPosition()
@@ -133,6 +143,15 @@ PatrolCar::updateWorldPosition()
     }
     // DEVEL-AV else?
   }
+
+  {
+    auto nodeIt = graph.getNodes().find( mNextNode );
+    if ( nodeIt != graph.getNodes().end() )
+    {
+      mDestinationWorldPositionX = nodeIt->second->getX();
+      mDestinationWorldPositionY = nodeIt->second->getY();
+    }
+  }
 }
 
 void
@@ -157,33 +176,8 @@ PatrolCar::travelOnCurrentArc()
 int 
 PatrolCar::evaluateAndSelectDestinationNode()
 {
-  float maxScore = std::numeric_limits<float>::lowest();
-  int nodeWithMaxScore = -1;
-  float maxRadiusSquare = Simulation::GetInstance().getMaxRadiusSquare();
+  int randomNodeId = rand() % Simulation::GetInstance().getGraph().getNodes().size();
 
-  // find the dirtiest node
-  for ( auto it : Simulation::GetInstance().getGraph().getNodes() )
-  {
-    if ( it.second->getId() == mCurrentNode || it.second->getCarBoundToVisit() != -1 )
-      continue;
-
-    float distToNodeSquare =
-      ( mWorldPositionX - it.second->getX() ) * ( mWorldPositionX - it.second->getX() ) +
-      ( mWorldPositionY - it.second->getY() ) * ( mWorldPositionY - it.second->getY() );
-
-    float distRatio = distToNodeSquare / maxRadiusSquare;
-    float dirtRatio = static_cast<float>( it.second->getDirtLevelScaled() ) / 255.0f;
-    // Closer the better
-    // Dirtier the better
-    float thisNodesScore = dirtRatio * ( 1.0f - distRatio );
-
-    if ( thisNodesScore > maxScore )
-    {
-      maxScore = thisNodesScore;
-      nodeWithMaxScore = it.first;
-    }
-  }
-
-  return nodeWithMaxScore;
+  return randomNodeId;
 }
 

@@ -80,7 +80,6 @@ Graph::Graph( const std::string& aNodeFilePath, const std::string& aArcFilePath 
         fromNodeIt->second->addOutArc( newArc );
         toNodeIt  ->second->addInArc( newArc );
       }
-
     }
     else
     {
@@ -107,7 +106,7 @@ Graph::plot( int aStart, int aEnd )
   for ( auto node : mNodes )
     fScore[node.first] = std::numeric_limits<float>::infinity();
 
-  fScore[aStart] = gScore[aStart] + getHeuristicBetween( aStart, aEnd );
+  fScore[aStart] = getHeuristicBetween( aStart, aEnd );
 
   while (openSet.size() > 0)
   {
@@ -132,7 +131,7 @@ Graph::plot( int aStart, int aEnd )
       int neighbourIndex = outArc->getNodeTo()->getId();
       if ( closedSet.find(neighbourIndex) != closedSet.end() )
         continue;
-      float tentativeGscore = gScore[current] + outArc->getDistance();
+      float tentativeGscore = gScore[current] + outArc->getInfluencedDistance();
       if ( openSet.find(neighbourIndex) == openSet.end() )
         openSet.insert(neighbourIndex);
       else if ( tentativeGscore >= gScore[neighbourIndex] )
@@ -154,12 +153,24 @@ Graph::getHeuristicBetween( int aFromNode, int aToNode ) const
   if ( nodeStartIt == mNodes.end() || nodeEndIt == mNodes.end() )
     return std::numeric_limits<float>::infinity();
 
-  if ( nodeEndIt->second->getCarBoundToVisit() != -1 )
-    return std::numeric_limits<float>::infinity();
+  //if ( nodeEndIt->second->getCarBoundToVisit() != -1 )
+  //  return std::numeric_limits<float>::infinity();
 
-  return 
+  glm::vec2 s( nodeStartIt->second->getX(), nodeStartIt->second->getY() );
+  glm::vec2 e( nodeEndIt->second->getX(), nodeEndIt->second->getY() );
+
+  float dx = nodeEndIt->second->getX() - nodeStartIt->second->getX();
+  float dy = nodeEndIt->second->getY() - nodeStartIt->second->getY();
+
+  float length = 
     (   glm::vec2( nodeStartIt->second->getX(), nodeStartIt->second->getY() )
       - glm::vec2( nodeEndIt->second->getX()  , nodeEndIt->second->getY() ) ).length();
+
+  if ( dx > dy )
+  {
+    return length * 0.1;
+  }
+  return length;
 }
 
 std::vector<int> 

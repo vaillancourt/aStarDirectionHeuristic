@@ -19,11 +19,13 @@ public:
   Node* getNodeTo() { return mNodeTo.get(); }
 
   float getDistance() const { return mDistance; }
+  float getInfluencedDistance() const { return mInfluencedDistance; }
 
 private:
   int mId;
   float mTravelCost;
   float mDistance;
+  float mInfluencedDistance;
   std::shared_ptr<Node> mNodeFrom;
   std::shared_ptr<Node> mNodeTo;
 };

@@ -50,7 +50,7 @@ main(void)
     ++frameCount;
     if ( std::chrono::high_resolution_clock::now() > secondEnd )
     {
-      std::cout << frameCount << std::endl;
+      //std::cout << frameCount << std::endl;
       frameCount = 0;
       secondEnd = std::chrono::high_resolution_clock::now() + std::chrono::seconds( 1 );
     }
