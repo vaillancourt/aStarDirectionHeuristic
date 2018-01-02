@@ -20,9 +20,10 @@ public:
   std::map< int, std::shared_ptr<Node> >& getNodes() { return mNodes; }
   std::map< int, std::shared_ptr<Arc> >& getArcs() { return mArcs; }
 
-  std::vector<int> plot( int aStart, int aEnd );
+  std::vector<int> plot( int aStart, int aEnd, bool aShouldOutputDebug = false);
 
   float getHeuristicBetween( int aFromNode, int aToNode ) const;
+  float getHeuristicBetween( int aFromNode, int aToNode, int aDeparturNode ) const;
 
 private:
 

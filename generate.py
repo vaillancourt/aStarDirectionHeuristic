@@ -1,6 +1,6 @@
 #py
 
-sizeX = 8
+sizeX = 9
 sizeY = 7
 distanceX = 0.2
 distanceY = 0.2

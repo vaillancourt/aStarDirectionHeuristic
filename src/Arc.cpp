@@ -16,12 +16,12 @@ Arc::Arc( int aId, std::shared_ptr<Node> aNodeFrom, std::shared_ptr<Node> aNodeT
     std::powf( aNodeTo->getX() - aNodeFrom->getX(), 2 ) + 
     std::powf( aNodeTo->getY() - aNodeFrom->getY(), 2 ) );
 
-  if ( ( aNodeTo->getX() - aNodeFrom->getX() ) > ( aNodeTo->getY() - aNodeFrom->getY() ) )
-  {
-    mInfluencedDistance = mDistance * 0.1;
-  }
-  else
-  {
+  //if ( ( aNodeTo->getX() - aNodeFrom->getX() ) > ( aNodeTo->getY() - aNodeFrom->getY() ) )
+  //{
+  //  mInfluencedDistance = mDistance * 0.1;
+  //}
+  //else
+  //{
     mInfluencedDistance = mDistance;
-  }
+  //}
 }

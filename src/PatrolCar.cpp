@@ -65,7 +65,20 @@ PatrolCar::selectNewArc()
       if ( mPath.size() <= 1 )
       {
         mNextNode = evaluateAndSelectDestinationNode();
-        mPath = graph.plot( mCurrentNode, mNextNode );
+        //if ( mCurrentNode == 8 )
+        //{
+        //  mNextNode = 31;
+        //  mPath = graph.plot( mCurrentNode, mNextNode, true );
+        //}
+        //else if ( mCurrentNode == 31 )
+        //{
+        //  mNextNode = 8;
+        //  mPath = graph.plot( mCurrentNode, mNextNode, true );
+        //}
+        //else
+        {
+          mPath = graph.plot( mCurrentNode, mNextNode );
+        }
       }
 
       int destNodeIndex = mPath.size() > 1 ? mPath[mPath.size() - 2] : -1;
