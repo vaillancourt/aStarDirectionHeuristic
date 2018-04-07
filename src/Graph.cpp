@@ -202,28 +202,28 @@ Graph::plot( int aStart, int aEnd, bool aShouldOutputDebug )
     openSet.erase( current );
     closedSet.insert( current );
 
-    struct SortableOutArc
-    {
-      std::shared_ptr<Arc> mArc;
-      glm::vec2 mDistanceToGo;
-    };
+    //struct SortableOutArc
+    //{
+    //  std::shared_ptr<Arc> mArc;
+    //  glm::vec2 mDistanceToGo;
+    //};
 
-    std::vector<SortableOutArc> sortableOutArcs;
+    //std::vector<SortableOutArc> sortableOutArcs;
 
     auto goalNode = mNodes.find( aEnd );
     assert( goalNode != mNodes.end() );
 
-    for ( auto outArc : mNodes[current]->getOutArcs() )
-    {
-      auto arcNode = outArc->getNodeTo();
-      SortableOutArc sortableOutArc;
-      sortableOutArc.mArc = outArc;
-      sortableOutArc.mDistanceToGo = 
-        glm::vec2( arcNode->getX(), arcNode->getY() ) - 
-        glm::vec2( goalNode->second->getX(), goalNode->second->getY() );
+    //for ( auto outArc : mNodes[current]->getOutArcs() )
+    //{
+    //  auto arcNode = outArc->getNodeTo();
+    //  SortableOutArc sortableOutArc;
+    //  sortableOutArc.mArc = outArc;
+    //  sortableOutArc.mDistanceToGo = 
+    //    glm::vec2( arcNode->getX(), arcNode->getY() ) - 
+    //    glm::vec2( goalNode->second->getX(), goalNode->second->getY() );
 
-      sortableOutArcs.push_back( sortableOutArc );
-    }
+    //  sortableOutArcs.push_back( sortableOutArc );
+    //}
 
     //std::sort( sortableOutArcs.begin(), sortableOutArcs.end(), []( const SortableOutArc& a, const SortableOutArc& b ) {
     //  if ( glm::epsilonEqual( a.mDistanceToGo.x, b.mDistanceToGo.x, 0.000005f ) )
@@ -237,10 +237,11 @@ Graph::plot( int aStart, int aEnd, bool aShouldOutputDebug )
     //  return std::abs( a.mDistanceToGo.y ) > std::abs( b.mDistanceToGo.y );
     //} );
 
-    //for ( auto outArc : mNodes[current]->getOutArcs() )
-    for ( auto& outArcSorted : sortableOutArcs )
+    for ( auto outArc : mNodes[current]->getOutArcs() )
     {
-      auto outArc = outArcSorted.mArc;
+    //for ( auto& outArcSorted : sortableOutArcs )
+    //{
+      //auto outArc = outArcSorted.mArc;
       int neighbourIndex = outArc->getNodeTo()->getId();
       if ( closedSet.find(neighbourIndex) != closedSet.end() )
         continue;
